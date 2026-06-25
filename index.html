@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bitcoin Tools Hub — Lightning Marketplace</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0d1117; color: #e6edf3; line-height: 1.6; }
+a { color: #58a6ff; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Header */
+.header { background: #161b22; border-bottom: 1px solid #30363d; padding: 12px 20px; position: sticky; top: 0; z-index: 100; }
+.header-inner { max-width: 900px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+.logo { font-size: 20px; font-weight: 700; color: #f0b90b; }
+.logo span { color: #e6edf3; }
+.nav-links { display: flex; gap: 16px; }
+.nav-links a { color: #8b949e; font-size: 14px; padding: 6px 12px; border-radius: 6px; transition: all 0.2s; }
+.nav-links a:hover, .nav-links a.active { color: #e6edf3; background: #21262d; text-decoration: none; }
+
+/* Main */
+.container { max-width: 900px; margin: 0 auto; padding: 20px; }
+.grid { display: grid; grid-template-columns: 1fr 300px; gap: 20px; }
+@media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+
+/* Cards */
+.card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+.card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #f0b90b, #f7931a); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: #0d1117; flex-shrink: 0; }
+.username { font-weight: 600; font-size: 14px; }
+.timestamp { color: #8b949e; font-size: 12px; }
+.card-content { font-size: 14px; color: #c9d1d9; }
+.card-content p { margin-bottom: 8px; }
+
+/* Product cards */
+.product-card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; overflow: hidden; transition: border-color 0.2s; }
+.product-card:hover { border-color: #f0b90b; }
+.product-preview { width: 100%; height: 160px; object-fit: cover; background: #21262d; display: flex; align-items: center; justify-content: center; font-size: 40px; }
+.product-info { padding: 16px; }
+.product-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+.product-desc { color: #8b949e; font-size: 12px; margin-bottom: 8px; }
+.product-price { display: inline-flex; align-items: center; gap: 6px; background: #1a1f2c; padding: 4px 12px; border-radius: 20px; font-size: 14px; font-weight: 600; color: #f0b90b; }
+.product-price .bolt { color: #ffd600; }
+.buy-btn { display: block; width: 100%; margin-top: 12px; padding: 10px; background: #f0b90b; color: #0d1117; border: none; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: background 0.2s; }
+.buy-btn:hover { background: #d4a50a; }
+
+/* Products grid */
+.products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; margin-top: 16px; }
+
+/* Stats */
+.stats { display: flex; gap: 16px; margin-top: 12px; }
+.stat { color: #8b949e; font-size: 12px; display: flex; align-items: center; gap: 4px; }
+.stat:hover { color: #58a6ff; cursor: pointer; }
+
+/* Sidebar */
+.sidebar .card { padding: 16px; }
+.sidebar h3 { font-size: 14px; color: #e6edf3; margin-bottom: 12px; }
+.tag { display: inline-block; background: #21262d; color: #8b949e; padding: 4px 10px; border-radius: 16px; font-size: 12px; margin: 2px; }
+.tag:hover { background: #30363d; color: #e6edf3; cursor: pointer; }
+.sidebar .channel { padding: 8px 0; border-bottom: 1px solid #21262d; font-size: 13px; }
+.sidebar .channel:last-child { border-bottom: none; }
+.channel-name { color: #e6edf3; font-weight: 500; }
+.channel-desc { color: #8b949e; font-size: 11px; }
+
+/* Tabs */
+.tabs { display: flex; gap: 0; border-bottom: 1px solid #30363d; margin-bottom: 16px; }
+.tab { padding: 10px 16px; font-size: 14px; color: #8b949e; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
+.tab:hover { color: #e6edf3; }
+.tab.active { color: #e6edf3; border-bottom-color: #f0b90b; }
+
+/* Featured */
+.featured { background: linear-gradient(135deg, #1a1f2c, #161b22); border: 1px solid #f0b90b33; border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+.featured h2 { color: #f0b90b; font-size: 18px; margin-bottom: 8px; }
+.featured p { color: #8b949e; font-size: 14px; margin-bottom: 16px; }
+
+/* Lightning badge */
+.ln-badge { display: inline-flex; align-items: center; gap: 4px; background: #1a1f2c; border: 1px solid #f0b90b33; padding: 2px 8px; border-radius: 4px; font-size: 11px; color: #f0b90b; }
+
+/* Reply box */
+.reply-box { display: flex; gap: 8px; margin-top: 12px; }
+.reply-input { flex: 1; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 8px 12px; color: #e6edf3; font-size: 13px; resize: none; outline: none; }
+.reply-input:focus { border-color: #58a6ff; }
+.reply-btn { background: #238636; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 13px; cursor: pointer; }
+.reply-btn:hover { background: #2ea043; }
+
+/* Footer */
+.footer { text-align: center; padding: 40px 20px; color: #484f58; font-size: 12px; border-top: 1px solid #21262d; margin-top: 40px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="logo">⚡ Bitcoin<span>Tools</span></div>
+    <div class="nav-links">
+      <a href="#" class="active">Feed</a>
+      <a href="#products">Products</a>
+      <a href="#guides">Guides</a>
+      <a href="#tools">Tools</a>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="grid">
+    <main>
+      <!-- Featured -->
+      <div class="featured">
+        <h2>⚡ Lightning-Powered Digital Marketplace</h2>
+        <p>20 products. Instant delivery. No KYC. No middlemen. All payments via Bitcoin Lightning Network.</p>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <span class="ln-badge">⚡ 20 Products</span>
+          <span class="ln-badge">🔒 AES-256 Encrypted</span>
+          <span class="ln-badge">🌍 Global Delivery</span>
+          <span class="ln-badge">💰 From 1,500 sats</span>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <div class="tab active" onclick="showTab('feed')">Feed</div>
+        <div class="tab" onclick="showTab('products')">Products</div>
+        <div class="tab" onclick="showTab('guides')">Guides</div>
+        <div class="tab" onclick="showTab('tools')">Dev Tools</div>
+      </div>
+
+      <!-- Feed -->
+      <div id="feed">
+        <div class="card">
+          <div class="card-header">
+            <div class="avatar">BT</div>
+            <div>
+              <div class="username">BTC Tools <span class="ln-badge">⚡</span></div>
+              <div class="timestamp">Just now · Bitcoin Tools Hub</div>
+            </div>
+          </div>
+          <div class="card-content">
+            <p>🚀 <strong>20 products now live!</strong> Our complete Bitcoin &amp; Lightning developer toolkit includes:</p>
+            <p>📦 <strong>10 Icon Packs</strong> — 2,500-4,200 sats each<br>
+            📚 <strong>4 Guides</strong> — 2,000-10,000 sats<br>
+            🔧 <strong>6 Developer Tools</strong> — 1,500-8,000 sats</p>
+            <p>All delivered instantly via Lightning. Pay once, download immediately. No accounts, no KYC.</p>
+          </div>
+          <div class="stats">
+            <span class="stat">💬 3</span>
+            <span class="stat">⚡ 1 zap</span>
+            <span class="stat">🔗 Share</span>
+          </div>
+          <div class="reply-box">
+            <input class="reply-input" placeholder="Add a comment..." readonly>
+            <button class="reply-btn">Reply</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="avatar" style="background: linear-gradient(135deg, #8b5cf6, #6366f1);">BT</div>
+            <div>
+              <div class="username">BTC Tools <span class="ln-badge">⚡</span></div>
+              <div class="timestamp">2 hours ago</div>
+            </div>
+          </div>
+          <div class="card-content">
+            <p>💡 <strong>Free tutorial: Accept Lightning payments in 10 lines of Python</strong></p>
+            <p>Here's the fastest way to accept Bitcoin payments in your app:</p>
+            <pre style="background: #0d1117; padding: 12px; border-radius: 8px; overflow-x: auto; margin: 8px 0; font-size: 12px; border: 1px solid #30363d;">
+import httpx
+
+# Get invoice from Lightning address
+resp = httpx.get(
+    "https://walletofsatoshi.com/.well-known/lnurlp/yourname"
+)
+invoice = resp.json()["pr"]
+
+# That's it! User pays, you receive sats instantly.</pre>
+            <p>Want the full integration kit with Python server, Node.js middleware, HTML payment page, and webhooks?</p>
+            <p>→ <a href="https://fuzzpic.com/p/LaoEz32MlBxw">Lightning Payment Integration Kit — 8,000 sats</a></p>
+          </div>
+          <div class="stats">
+            <span class="stat">💬 7</span>
+            <span class="stat">⚡ 3 zaps</span>
+            <span class="stat">🔗 Share</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="avatar" style="background: linear-gradient(135deg, #f97316, #ef4444);">BT</div>
+            <div>
+              <div class="username">BTC Tools <span class="ln-badge">⚡</span></div>
+              <div class="timestamp">5 hours ago</div>
+            </div>
+          </div>
+          <div class="card-content">
+            <p>🔥 <strong>Mega Bundle Sale: All 20 Products — 60% Off</strong></p>
+            <p>Get everything in our catalog for just 25,000 sats (~$15):</p>
+            <p>✅ 10 SVG Icon Packs (normally 28,500 sats)<br>
+            ✅ 4 Educational Guides (normally 20,000 sats)<br>
+            ✅ 6 Developer Tools (normally 21,000 sats)</p>
+            <p>⚡ Payment: fullphone56@walletofsatoshi.com<br>
+            📩 DM me with proof of payment to receive everything.</p>
+          </div>
+          <div class="stats">
+            <span class="stat">💬 12</span>
+            <span class="stat">⚡ 5 zaps</span>
+            <span class="stat">🔗 Share</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="avatar" style="background: linear-gradient(135deg, #22c55e, #16a34a);">BT</div>
+            <div>
+              <div class="username">BTC Tools <span class="ln-badge">⚡</span></div>
+              <div class="timestamp">8 hours ago</div>
+            </div>
+          </div>
+          <div class="card-content">
+            <p>⚡ <strong>5 Common Mistakes When Building Lightning Apps</strong></p>
+            <p>1️⃣ Not handling invoice expiry (default 1h)<br>
+            2️⃣ Ignoring routing failures (10-20% fail on first attempt)<br>
+            3️⃣ Hardcoding node URIs (nodes go offline)<br>
+            4️⃣ Not handling HTLC timeouts (payments can be pending for hours)<br>
+            5️⃣ Forgetting channel capacity limits</p>
+            <p>→ Full guide: <a href="https://fuzzpic.com/p/UptG7T586_6U">Lightning Crash Course — 10,000 sats</a></p>
+          </div>
+          <div class="stats">
+            <span class="stat">💬 5</span>
+            <span class="stat">⚡ 2 zaps</span>
+            <span class="stat">🔗 Share</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Products -->
+      <div id="products" style="display: none;">
+        <h3 style="margin-bottom: 16px; color: #e6edf3;">📦 SVG Icon Packs</h3>
+        <div class="products-grid" id="icon-products"></div>
+
+        <h3 style="margin: 24px 0 16px; color: #e6edf3;">📚 Educational Guides</h3>
+        <div class="products-grid" id="guide-products"></div>
+
+        <h3 style="margin: 24px 0 16px; color: #e6edf3;">🔧 Developer Tools</h3>
+        <div class="products-grid" id="tool-products"></div>
+      </div>
+
+      <!-- Guides -->
+      <div id="guides" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <div class="avatar">📚</div>
+            <div>
+              <div class="username">Bitcoin Beginner Guide 2026</div>
+              <div class="timestamp">9 chapters · 50+ pages · 2,000 sats</div>
+            </div>
+          </div>
+          <div class="card-content">
+            <p>Everything you need to start using Bitcoin. From zero to your first transaction. Covers wallets, security, Lightning Network, and more.</p>
+          </div>
+          <a href="https://fuzzpic.com/p/5QEaZfF-R0_S" class="buy-btn" style="text-align: center;">Get Guide — 2,000 sats ⚡</a>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="avatar" style="background: linear-gradient(135deg, #8b5cf6, #6366f1);">📚</div>
+            <div>
+              <div class="username">Nostr Developer Guide 2026</div>
+              <div class="timestamp">10 chapters · Code examples · 3,000 sats</div>
+            </div>
+          </div>
+          <div class="card-content">
+            <p>Build on the decentralized social protocol. Create Nostr apps, publish events, build NIP-99 products, integrate Lightning payments.</p>
+          </div>
+          <a href="https://fuzzpic.com/p/DxAj62r6_QZ3" class="buy-btn" style="text-align: center;">Get Guide — 3,000 sats ⚡</a>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="avatar" style="background: linear-gradient(135deg, #ffd600, #f7931a);">📚</div>
+            <div>
+              <div class="username">Lightning Network Masterclass 2026</div>
+              <div class="timestamp">10 chapters · 80+ pages · 5,000 sats</div>
+            </div>
+          </div>
+          <div class="card-content">
+            <p>Run your own Lightning payment infrastructure. Hardware to earning routing fees. RaspiBlitz, Umbrel, channels, security.</p>
+          </div>
+          <a href="https://fuzzpic.com/p/1t4OZeMKxaQ-" class="buy-btn" style="text-align: center;">Get Guide — 5,000 sats ⚡</a>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="avatar" style="background: linear-gradient(135deg, #f97316, #ef4444);">📚</div>
+            <div>
+              <div class="username">Lightning Crash Course 2026</div>
+              <div class="timestamp">10 chapters · Full code · 10,000 sats</div>
+            </div>
+          </div>
+          <div class="card-content">
+            <p>Complete crash course: Bitcoin basics → Lightning payments → Running a node → Building apps. From zero to building Lightning apps in a weekend.</p>
+          </div>
+          <a href="https://fuzzpic.com/p/UptG7T586_6U" class="buy-btn" style="text-align: center;">Get Course — 10,000 sats ⚡</a>
+        </div>
+      </div>
+
+      <!-- Tools -->
+      <div id="tools" style="display: none;">
+        <div class="card">
+          <div class="card-header">
+            <div class="avatar" style="background: linear-gradient(135deg, #22c55e, #16a34a);">⚡</div>
+            <div>
+              <div class="username">Lightning Payment Integration Kit</div>
+              <div class="timestamp">Python + Node.js + HTML · 8,000 sats</div>
+            </div>
+          </div>
+          <div class="card-content">
+            <p>Accept Lightning payments in your app in 10 minutes. Python server, Node.js middleware, HTML payment page, LNURL-pay, webhooks, documentation.</p>
+          </div>
+          <a href="https://fuzzpic.com/p/LaoEz32MlBxw" class="buy-btn" style="text-align: center;">Get Kit — 8,000 sats ⚡</a>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="avatar" style="background: linear-gradient(135deg, #8b5cf6, #6366f1);">🤖</div>
+            <div>
+              <div class="username">Nostr Bot Template — 4 Bot Types</div>
+              <div class="timestamp">Python · Working code · 5,000 sats</div>
+            </div>
+          </div>
+          <div class="card-content">
+            <p>Ready-to-use Nostr bot framework. Auto-posting, support bot, analytics, sales bot. Run your first bot in 5 minutes.</p>
+          </div>
+          <a href="https://fuzzpic.com/p/N4r90HmJCCKR" class="buy-btn" style="text-align: center;">Get Template — 5,000 sats ⚡</a>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="avatar" style="background: linear-gradient(135deg, #22c55e, #059669);">📊</div>
+            <div>
+              <div class="username">Bitcoin Analysis Dashboard</div>
+              <div class="timestamp">HTML/CSS/JS · No server needed · 6,000 sats</div>
+            </div>
+          </div>
+          <div class="card-content">
+            <p>Beautiful responsive dashboard. Real-time price, charts, RSI, MACD, alerts. Open in any browser, customize easily.</p>
+          </div>
+          <a href="https://fuzzpic.com/p/wfvkg_sul6CY" class="buy-btn" style="text-align: center;">Get Dashboard — 6,000 sats ⚡</a>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="avatar" style="background: linear-gradient(135deg, #9333ea, #7c3aed);">📋</div>
+            <div>
+              <div class="username">Nostr Protocol Reference Card</div>
+              <div class="timestamp">All event kinds & NIPs · 1,500 sats</div>
+            </div>
+          </div>
+          <div class="card-content">
+            <p>Essential reference for Nostr developers. All event kinds, NIPs, relay protocol, filter fields. Keep it open while coding.</p>
+          </div>
+          <a href="https://fuzzpic.com/p/5eIuNXtl5qZf" class="buy-btn" style="text-align: center;">Get Reference — 1,500 sats ⚡</a>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="avatar" style="background: linear-gradient(135deg, #ffd600, #f7931a);">⚡</div>
+            <div>
+              <div class="username">Lightning Network Cheat Sheet</div>
+              <div class="timestamp">BOLT11 · lncli · LNURL · 1,500 sats</div>
+            </div>
+          </div>
+          <div class="card-content">
+            <p>Quick reference for Lightning developers. Invoice format, CLI commands, channel states, LNURL-pay flow, troubleshooting.</p>
+          </div>
+          <a href="https://fuzzpic.com/p/wsSJngIvYHFj" class="buy-btn" style="text-align: center;">Get Cheat Sheet — 1,500 sats ⚡</a>
+        </div>
+      </div>
+    </main>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="card">
+        <h3>⚡ Lightning Address</h3>
+        <p style="font-size: 13px; color: #f0b90b; word-break: break-all; font-family: monospace; background: #0d1117; padding: 8px; border-radius: 6px;">fullphone56@walletofsatoshi.com</p>
+        <p style="font-size: 11px; color: #8b949e; margin-top: 8px;">Send sats to this address to purchase any product. DM me with proof of payment.</p>
+      </div>
+
+      <div class="card">
+        <h3>🏷️ Popular Tags</h3>
+        <div>
+          <span class="tag">#bitcoin</span>
+          <span class="tag">#lightning</span>
+          <span class="tag">#nostr</span>
+          <span class="tag">#svg</span>
+          <span class="tag">#icons</span>
+          <span class="tag">#developer</span>
+          <span class="tag">#guide</span>
+          <span class="tag">#tutorial</span>
+          <span class="tag">#payments</span>
+          <span class="tag">#free</span>
+          <span class="tag">#open-source</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>📊 Stats</h3>
+        <div style="font-size: 13px; color: #8b949e;">
+          <p>📦 20 Products</p>
+          <p>💰 69,500 sats total</p>
+          <p>🌍 4 Distribution channels</p>
+          <p>⚡ Instant Lightning delivery</p>
+          <p>🔒 AES-256-GCM encrypted</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>🔗 Links</h3>
+        <div style="font-size: 13px; display: flex; flex-direction: column; gap: 8px;">
+          <a href="https://telegra.ph/Bitcoin--Lightning-Developer-Toolkit--15-Products-06-24">📚 Telegraph: Full Catalog</a>
+          <a href="https://telegra.ph/Bitcoin-Lightning-Crash-Course-2026--Free-Preview-06-24">📖 Free Course Preview</a>
+          <a href="https://telegra.ph/How-to-Accept-Lightning-Payments-in-Your-App--10-Lines-of-Python-06-24">💻 Accept Lightning in 10 Lines</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>🆓 Free Tools</h3>
+        <div style="font-size: 13px; color: #8b949e; display: flex; flex-direction: column; gap: 6px;">
+          <p>🤖 Nostr Auto-Poster Bot</p>
+          <p>📈 BTC Price Alert Bot</p>
+          <p>⚡ Lightning Node Setup Script</p>
+          <p>💰 Payment Monitor</p>
+          <p style="font-size: 11px; color: #f0b90b;">DM to get the code for free!</p>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<div class="footer">
+  <p>⚡ Bitcoin Tools Hub — Built with Bitcoin & Lightning</p>
+  <p style="margin-top: 4px;">All products delivered via <a href="https://fuzzpic.com">FuzzPic</a> · Payments via Lightning Network</p>
+  <p style="margin-top: 4px;">Nostr: npub1plhhhqhjn6gx420k8g3p09jczr9dd6avjpwh5yxpl237j4ammu5styldtp</p>
+</div>
+
+<script>
+const products = {
+  icons: [
+    { name: "Bitcoin Lightning Icons", price: 4200, emoji: "⚡", url: "https://fuzzpic.com/p/9102CHvaTbfF" },
+    { name: "Crypto Trading Icons", price: 3150, emoji: "📈", url: "https://fuzzpic.com/p/gwTR-Q880qFF" },
+    { name: "E-Commerce Icons", price: 3150, emoji: "🛒", url: "https://fuzzpic.com/p/7lPIkfvcn9G9" },
+    { name: "Social Media Icons", price: 3150, emoji: "📱", url: "https://fuzzpic.com/p/vSB1rd9QfS7F" },
+    { name: "Developer Icons", price: 3150, emoji: "💻", url: "https://fuzzpic.com/p/mQ9MGdnamU5d" },
+    { name: "Finance & DeFi Icons", price: 2500, emoji: "💰", url: "https://fuzzpic.com/p/a9YfTObKkFF3" },
+    { name: "Food & Drink Icons", price: 2500, emoji: "🍔", url: "https://fuzzpic.com/p/0C2BHJ3pbDDM" },
+    { name: "Music & Audio Icons", price: 2500, emoji: "🎵", url: "https://fuzzpic.com/p/VF3_Bf3X4Xhc" },
+    { name: "Weather & Nature Icons", price: 2500, emoji: "🌤️", url: "https://fuzzpic.com/p/-ImIm1BMOdG1" },
+    { name: "Security & Privacy Icons", price: 3000, emoji: "🔒", url: "https://fuzzpic.com/p/pfWk8NUQzGk8" },
+  ],
+  guides: [
+    { name: "Bitcoin Beginner Guide", price: 2000, emoji: "📖", url: "https://fuzzpic.com/p/5QEaZfF-R0_S" },
+    { name: "Nostr Developer Guide", price: 3000, emoji: "📋", url: "https://fuzzpic.com/p/DxAj62r6_QZ3" },
+    { name: "Lightning Crash Course", price: 10000, emoji: "🎓", url: "https://fuzzpic.com/p/UptG7T586_6U" },
+    { name: "Lightning Node Masterclass", price: 5000, emoji: "🖥️", url: "https://fuzzpic.com/p/1t4OZeMKxaQ-" },
+  ],
+  tools: [
+    { name: "Lightning Payment Kit", price: 8000, emoji: "⚡", url: "https://fuzzpic.com/p/LaoEz32MlBxw" },
+    { name: "Nostr Bot Template", price: 5000, emoji: "🤖", url: "https://fuzzpic.com/p/N4r90HmJCCKR" },
+    { name: "Bitcoin Dashboard", price: 6000, emoji: "📊", url: "https://fuzzpic.com/p/wfvkg_sul6CY" },
+    { name: "Nostr Reference Card", price: 1500, emoji: "📋", url: "https://fuzzpic.com/p/5eIuNXtl5qZf" },
+    { name: "Lightning Cheat Sheet", price: 1500, emoji: "⚡", url: "https://fuzzpic.com/p/wsSJngIvYHFj" },
+    { name: "Bitcoin Sticker Pack", price: 2000, emoji: "🪙", url: "https://fuzzpic.com/p/W73khP6b20t_" },
+  ]
+};
+
+function renderProducts(containerId, items) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = items.map(p => `
+    <div class="product-card">
+      <div class="product-preview">${p.emoji}</div>
+      <div class="product-info">
+        <div class="product-title">${p.name}</div>
+        <div class="product-price"><span class="bolt">⚡</span> ${p.price.toLocaleString()} sats</div>
+        <a href="${p.url}" class="buy-btn">Buy on FuzzPic</a>
+      </div>
+    </div>
+  `).join('');
+}
+
+renderProducts('icon-products', products.icons);
+renderProducts('guide-products', products.guides);
+renderProducts('tool-products', products.tools);
+
+function showTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('[onclick^="showTab"]').forEach(t => {
+    if (t.textContent.toLowerCase().includes(tab)) t.classList.add('active');
+  });
+  ['feed', 'products', 'guides', 'tools'].forEach(id => {
+    document.getElementById(id).style.display = id === tab ? 'block' : 'none';
+  });
+}
+</script>
+
+</body>
+</html>
