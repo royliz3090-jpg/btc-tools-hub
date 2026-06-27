@@ -48,3 +48,28 @@
 
 ---
 Built with ❤️ for the Bitcoin community.
+
+
+---
+
+## 💖 Support this project
+
+If these tools have saved you time or sats, throw a Lightning zap.
+
+⚡ **Lightning (preferred):** `fullphone56@walletofsatoshi.com`
+💰 **On-chain BTC:** `bc1qzzwnxk5uwwy02lf97uje8ng5wj75j72lf5plh9`
+🪙 **Solana:** `4KVyZN5N57Z9zjQvnubjM9NVJzbcq1sryHCc6LujZNqb`
+
+---
+
+## 🆕 Memecoin Branding Service (NEW)
+
+Launching on pump.fun, Believe, Raydium or any Solana DEX? Need a fast visual identity?
+
+- **Starter ($25 / 0.17 SOL)** — 1 hero logo + 3 variants, 24h delivery
+- **Pro ($60 / 0.40 SOL)** — full pack + emoji + banners, 48h delivery
+- **Premium ($180 / 1.0 SOL)** — whitepaper cover + animated + 14-day iteration
+
+Full pitch: [`deliverables/PITCH_MEMECOIN_BRANDING.md`](./deliverables/PITCH_MEMECOIN_BRANDING.md)
+
+DM me on Nostr: `npub1plhhhqhjn6gx420k8g3p09jczr9dd6avjpwh5yxpl237j4ammu5styldtp`
